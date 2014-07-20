@@ -1,0 +1,27 @@
+{
+  "name" : "Ads Tracking",
+  "version" : "0.9",
+  "description" : "Extracts advertising data from web pages",
+  "background" : {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "all_frames": true,
+      "js": ["content.js"]
+    }
+  ],
+  "page_action" :
+  {
+    "default_icon" : "icon-19.png",
+    "default_title" : "Extract ads"
+  },
+  "permissions": [ "declarativeContent", "tabs" ],
+  "icons" : {
+    "48" : "icon-48.png",
+    "128" : "icon-128.png"
+  },
+  "manifest_version": 2
+}
