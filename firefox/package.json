@@ -1,0 +1,10 @@
+{
+  "name" : "ads-tracking",
+  "version" : "0.9",
+  "description" : "Extracts advertising data from web pages",
+  "author": "vlad@devslab.com",
+  "id": "jid1-OUwvdUoCnNXflA",
+  "license": "MIT",
+  "icon": "icon-48.png",
+  "icon64": "icon-64.png"
+}
