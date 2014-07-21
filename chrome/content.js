@@ -90,19 +90,23 @@ window.onload = function() {
     var ads = findAds(docs[i]);
     data = data.concat(ads);
   }
-  if (window.parent != window) {
-    if (data.length) {
-      chrome.extension.sendMessage({ data: data });
-    }
-  } else {
-    console.log('ADS FOUND', JSON.stringify(data, false, 2));
-  }
+  // if (window.parent != window) {
+  //   if (data.length) {
+  //     chrome.extension.sendMessage({ data: data });
+  //   }
+  // } else {
+  //   console.log('ADS FOUND', JSON.stringify(data, false, 2));
+  // }
 
+  if (data.length) {
+    chrome.extension.sendMessage({ data: data });
+  }
   if (location.href.indexOf('://www.google.') > -1) {
     var ads = extractGoogleSearchAds();
     // data = data.concat(ads);
     if (ads.length) {
       console.log('GOOGLE SEARCH ADS', JSON.stringify(ads, false, 2));
+      chrome.extension.sendMessage({ data: ads });
     }
   }
 }
@@ -110,16 +114,16 @@ window.onload = function() {
 // console.log('hi from extension', window.parent == window, window.location.href);
 
 
-if (window.parent == window) {
-  chrome.extension.onMessage.addListener(function(msg) {
-    if (msg.data) {
-      data = data.concat(msg.data);
-      console.log('IFRAME AD FOUND', JSON.stringify(msg.data, false, 2));
-    }
-  });
-} else {
-  chrome.extension.onMessage.addListener(function(data) {});
-}
+// if (window.parent == window) {
+//   chrome.extension.onMessage.addListener(function(msg) {
+//     if (msg.data) {
+//       data = data.concat(msg.data);
+//       console.log('IFRAME AD FOUND', JSON.stringify(msg.data, false, 2));
+//     }
+//   });
+// } else {
+//   chrome.extension.onMessage.addListener(function(data) {});
+// }
 
 //location change polling for dynamic ads
 setInterval(function(){

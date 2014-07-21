@@ -1,0 +1,18 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    meta(name='description', content=description)
+    title= title
+    link(rel='stylesheet', href='http://yui.yahooapis.com/pure/0.5.0/pure-min.css')
+    link(rel='stylesheet', href='http://yui.yahooapis.com/pure/0.5.0/grids-responsive-min.css')
+    link(rel='stylesheet', href='http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css')
+    != css('styles.css')
+  body
+    block content
+    script(type='text/javascript', src='http://code.jquery.com/jquery-1.7.2.min.js')
+    != js('scripts.js')
+
+
+

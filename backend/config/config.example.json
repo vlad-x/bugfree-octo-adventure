@@ -1,0 +1,6 @@
+{
+  "es": {
+    "host": "elasticsearchhost.tld",
+    "port": 9200
+  }
+}
