@@ -1,7 +1,16 @@
 elasticsearch = require('elasticsearch')
+fs = require 'fs'
+files = require 'files'
+request = require 'request'
+http = require 'http'
+# nodecr = require 'nodecr' # sudo apt-get install tesseract-ocr
 
 module.exports = (app) ->
   class app.API
+    try
+      fs.mkdirSync('data');
+    catch e
+      #
     console.log 'ES config', app.config.es
     es = @es = new elasticsearch.Client
       host: app.config.es
@@ -11,6 +20,14 @@ module.exports = (app) ->
       hello: "elasticsearch!"
     , (err)->
       console.log 'ES ping', arguments
+
+    fetchFromUrl = (url, dest, cb) ->
+      file = fs.createWriteStream(dest)
+      request = http.get(url, (response) ->
+        response.pipe file
+        file.on "finish", ->
+          file.close cb # close() is async, call cb after close completes.
+      )
 
     saveIntoElasticSearch = (data, callback) ->
       console.log 'saveIntoElasticSearch', data
@@ -23,18 +40,37 @@ module.exports = (app) ->
         console.log err, resp
         callback err, resp
 
+    resolveUlr = (ad, callback) ->
+      request ad.url, (err, response, body) ->
+          console.log 'resolve url', response.url #arguments
+
+    processAd = (ad, callback) ->
+      if ad.img
+        filename = files.getFileName ad.img
+        console.log 'ad.img',ad.img
+        fetchFromUrl ad.img, 'data/'+filename, (err, path) ->
+          console.log 'got icon', arguments
+          # nodecr.process('data/' + ad.img, (err, text) ->
+          resolveUlr ad, callback
+      else
+        resolveUlr ad, callback
+
     # GET /
     @saveData = (req, res) ->
-      console.log 'req.body', req.body
+      # console.log 'req.body', req.body
       items = req.body # JSON.parse req.body
       console.log 'saveData', items
       count = 0
+
       for item in items
         count++
-        saveIntoElasticSearch item, (err, resp)->
-          count--
-          if count == 0
-            res.json resp || err || null
+        processAd item
+
+      res.json { result: "OK" }
+      #   saveIntoElasticSearch item, (err, resp)->
+      #     count--
+      #     if count == 0
+      #       res.json resp || err || null
 
 
     @search = (req, res) ->

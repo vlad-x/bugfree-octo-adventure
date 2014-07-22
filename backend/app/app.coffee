@@ -1,3 +1,5 @@
+
+
 # Modules
 express = require 'express'
 http = require 'http'
@@ -5,6 +7,15 @@ app = express()
 
 # Boot setup
 require("#{__dirname}/../config/boot")(app)
+
+app.allowCORS = (req, res, next) ->
+  console.log 'allowCORS', req.method, req.path
+  if req.path.indexOf('/api/') == 0 # req.method == 'OPTIONS' &&
+    res.header 'Access-Control-Allow-Origin', '*'
+    res.header 'Access-Control-Allow-Credentials', true
+    res.header 'Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS'
+    res.header 'Access-Control-Allow-Headers', 'Content-Type'
+  next()
 
 # Configuration
 app.configure ->
@@ -23,6 +34,7 @@ app.configure ->
   app.use express.bodyParser()
   app.use express.methodOverride()
   app.use require('connect-assets')(src: "#{__dirname}/assets")
+  app.use app.allowCORS
   app.use app.router
 
 app.configure 'development', ->
