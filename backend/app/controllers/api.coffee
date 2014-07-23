@@ -3,7 +3,16 @@ fs = require 'fs'
 files = require 'files'
 request = require 'request'
 http = require 'http'
-# nodecr = require 'nodecr' # sudo apt-get install tesseract-ocr
+nodecr = require 'nodecr' # sudo apt-get install tesseract-ocr
+gramophone = require 'gramophone'
+crypto = require 'crypto'
+cardi = require 'cardi'
+
+md5 = (what) ->
+  return null  unless what
+  hash = crypto.createHash("md5")
+  hash.update what.toString().toLowerCase()
+  hash.digest "hex"
 
 module.exports = (app) ->
   class app.API
@@ -23,9 +32,13 @@ module.exports = (app) ->
 
     fetchFromUrl = (url, dest, cb) ->
       file = fs.createWriteStream(dest)
-      request = http.get(url, (response) ->
+      req = http.get(url, (response) ->
         response.pipe file
-        file.on "finish", ->
+        file.on 'error', ->
+          console.log 'error downloading image'
+          cb()
+        file.on 'finish', ->
+          console.log 'finished downloading image', dest
           file.close cb # close() is async, call cb after close completes.
       )
 
@@ -42,15 +55,25 @@ module.exports = (app) ->
 
     resolveUlr = (ad, callback) ->
       request ad.url, (err, response, body) ->
-          console.log 'resolve url', response.url #arguments
+        console.log 'resolve url', response.url #arguments
+        keywords = gramophone.extract(body, {html: true, limit: 20 })
+        console.log 'keywords', keywords
+        cardi.fromUrl ad.url, (err, card) ->
+          console.log 'cardi', arguments
 
     processAd = (ad, callback) ->
+      if ad.img
+        ad.id = md5 ad.img
+      else
+        ad.id = md5(ad.title + ad.text)
+
       if ad.img
         filename = files.getFileName ad.img
         console.log 'ad.img',ad.img
         fetchFromUrl ad.img, 'data/'+filename, (err, path) ->
           console.log 'got icon', arguments
-          # nodecr.process('data/' + ad.img, (err, text) ->
+          nodecr.process 'data/'+filename, (err, text) ->
+            console.log 'nodecr', arguments
           resolveUlr ad, callback
       else
         resolveUlr ad, callback

@@ -2,7 +2,7 @@
 function extractBanner(el) {
   var img = el.querySelector('img');
   if (!img) return false;
-  return { img: img.src, url: el.href };
+  return { img: img.src, url: el.href, origin: origin };
 }
 
 var ads = {
@@ -16,6 +16,17 @@ var ads = {
 
 var data = [];
 var orig_location = window.location.hef;
+var isTop = window.parent == window;
+
+var parent = window
+var origin = location.href;
+
+while(parent != window.parent) {
+  origin = parent.location.href;
+  parent = window.parent;
+}
+
+console.log('ORIGIN', origin);
 
 function findFrames() {
   // find all iframes
@@ -64,7 +75,7 @@ function extractGoogleSearchAds() {
       console.log(ad.innerHTML);
     }
     if (url && text) {
-      out.push({ url: url, visit_url: visit_url, title: title, text: text, location: location});
+      out.push({ url: url, visit_url: visit_url, title: title, text: text, location: location, origin: 'google-search'});
     }
   };
   var tads = document.querySelectorAll('#tads li.ads-ad');

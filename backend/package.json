@@ -2,8 +2,11 @@
   "name": "backend",
   "version": "0.0.1",
   "dependencies": {
+    "cardi": "^0.1.2",
     "coffee-script": "*",
     "connect-assets": "2.1.x",
+    "crypto": "0.0.3",
+    "elasticsearch": "^2.3.0",
     "express": "3.0.0beta4",
     "files": "^0.8.2",
     "gramophone": "0.0.3",
